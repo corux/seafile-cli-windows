@@ -14,5 +14,4 @@ deploy:
     auth_token:
       secure: S38Udmjk/tDNbc17u2808ocmmWvHXUEIJZxnJNnD6U0mFAzevJMbGUUHIkvEoQVY
     on:
-      branch: master
       appveyor_repo_tag: true
