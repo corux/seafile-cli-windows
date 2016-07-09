@@ -10,10 +10,14 @@ open System.IO
 
 // Properties
 let buildDir = "bin/build"
+let artifactsDir = "bin/artifacts"
+let mergedExe = artifactsDir @@ "seafile-cli.exe"
+let primaryExe = buildDir @@ "SeafileCli.exe"
 let nugetPackages = "src/packages"
 let sln = "src/SeafileCli.sln"
 let solutionInfo = "src/SolutionInfo.cs"
 let nugetExe = "packages/NuGet.CommandLine/tools/NuGet.exe"
+let ilMergeExe = "packages/ilmerge/tools/ILMerge.exe"
 let name = "Seafile CLI"
 let publisher = "Tobias Wallura"
 
@@ -36,7 +40,7 @@ Target "NugetRestore" (fun _ ->
 )
 
 Target "Clean" (fun _ ->
-   CleanDirs [buildDir]
+   CleanDirs [buildDir; artifactsDir]
 )
 
 Target "Build" (fun _ ->
@@ -56,13 +60,23 @@ Target "Build" (fun _ ->
         |> Log "Build-Output: "
 )
 
+Target "ILMerge" (fun _ ->
+    ILMerge (fun p ->
+        { p with
+            ToolPath = ilMergeExe
+            TargetKind = Exe
+            AllowWildcards = true
+            Libraries = [buildDir @@ "*.dll"] })
+        mergedExe
+        primaryExe
+)
+
 Target "Default" DoNothing
-Target "Exe" DoNothing
 
 // Dependencies
 "Clean"
    ==> "Build"
-   ==> "Exe"
+   ==> "ILMerge"
    ==> "Default"
 
 "NugetRestore" ==> "Build"

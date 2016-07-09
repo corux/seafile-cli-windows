@@ -1,5 +1,5 @@
 artifacts:
-  - path: 'bin\build\*'
+  - path: 'bin\artifacts\*.exe'
 
 build_script:
   - build.bat
