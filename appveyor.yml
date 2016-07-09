@@ -1,0 +1,7 @@
+artifacts:
+  - path: 'bin\build\*'
+
+build_script:
+  - build.bat
+
+test: off
