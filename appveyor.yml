@@ -1,3 +1,5 @@
+version: '{build}'
+
 artifacts:
   - path: 'bin\artifacts\*.exe'
 
@@ -5,3 +7,12 @@ build_script:
   - build.bat
 
 test: off
+
+deploy:
+  - provider: GitHub
+    artifact: /.*\.exe/
+    auth_token:
+      secure: S38Udmjk/tDNbc17u2808ocmmWvHXUEIJZxnJNnD6U0mFAzevJMbGUUHIkvEoQVY
+    on:
+      branch: master
+      appveyor_repo_tag: true
