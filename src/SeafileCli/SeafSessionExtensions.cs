@@ -31,12 +31,13 @@ namespace SeafileCli
         }
 
         /// <summary>
-        /// Creates the directory in the given library. The directory structure will be created recursively.
+        /// Creates the directory in the given library. The directory structure with all parents will be created as well.
+        /// If the directory already exists, no error will be thrown.
         /// </summary>
         /// <param name="session">The seafile session.</param>
         /// <param name="library">The library, where the directory should be created in.</param>
         /// <param name="path">The directory to create.</param>
-        public static async Task CreateDirectory(this SeafSession session, SeafLibrary library, string path)
+        public static async Task CreateDirectoryWithParents(this SeafSession session, SeafLibrary library, string path)
         {
             var currentPath = path;
             for (int i = 0; i <= path.Count(n => n == '/'); i++)

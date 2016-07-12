@@ -21,7 +21,7 @@ namespace SeafileCli.VerbHandler
         {
             var session = await _options.GetSession();
             var library = await session.GetLibrary(_options.Library);
-            await session.CreateDirectory(library, _options.Directory);
+            await session.CreateDirectoryWithParents(library, _options.Directory);
 
             foreach (var file in _options.Files)
             {

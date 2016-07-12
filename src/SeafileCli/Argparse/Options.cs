@@ -10,12 +10,15 @@ namespace SeafileCli.Argparse
     {
         public Options()
         {
-            TokenVerb = new TokenSubOptions();
+            TokenVerb = new CommonOptions();
             UploadVerb = new UploadSubOptions();
         }
 
         [VerbOption("token", HelpText = "Retrieves the authorization token with the provided username and password.")]
-        public TokenSubOptions TokenVerb { get; set; }
+        public CommonOptions TokenVerb { get; set; }
+
+        [VerbOption("account-info", HelpText = "Retrieves the user account information.")]
+        public CommonOptions AccountInfoVerb { get; set; }
 
         [VerbOption("upload", HelpText = "Uploads files and folders to seafile.")]
         public UploadSubOptions UploadVerb { get; set; }
