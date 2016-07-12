@@ -13,8 +13,7 @@ namespace SeafileCli
             object invokedVerbInstance = null;
             var options = new Options();
 
-            var parser = new Parser(settings => { settings.HelpWriter = Console.Out; });
-            if (!parser.ParseArguments(args, options, (verb, subOptions) =>
+            if (!Parser.Default.ParseArguments(args, options, (verb, subOptions) =>
             {
                 invokedVerb = verb;
                 invokedVerbInstance = subOptions;

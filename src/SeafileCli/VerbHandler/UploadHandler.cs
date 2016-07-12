@@ -5,6 +5,9 @@ using SeafileCli.Argparse;
 
 namespace SeafileCli.VerbHandler
 {
+    /// <summary>
+    /// Handles the uploading of files.
+    /// </summary>
     public class UploadHandler : IVerbHandler
     {
         private readonly UploadSubOptions _options;

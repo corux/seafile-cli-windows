@@ -3,6 +3,9 @@ using SeafileCli.Argparse;
 
 namespace SeafileCli.VerbHandler
 {
+    /// <summary>
+    /// Retrieves the seafile API token and prints it on the console.
+    /// </summary>
     public class TokenHandler : IVerbHandler
     {
         private readonly TokenSubOptions _options;

@@ -6,8 +6,17 @@ using SeafClient.Types;
 
 namespace SeafileCli
 {
+    /// <summary>
+    /// Contains extension methods for the class <see cref="SeafSession"/>.
+    /// </summary>
     public static class SeafSessionExtensions
     {
+        /// <summary>
+        /// Checks if the given directory exists.
+        /// </summary>
+        /// <param name="session">The seafile session.</param>
+        /// <param name="library">The library, which will searched for the directory.</param>
+        /// <param name="path">The directory to check for existence.</param>
         public static async Task<bool> ExistsDirectory(this SeafSession session, SeafLibrary library, string path)
         {
             try
@@ -21,6 +30,12 @@ namespace SeafileCli
             }
         }
 
+        /// <summary>
+        /// Creates the directory in the given library. The directory structure will be created recursively.
+        /// </summary>
+        /// <param name="session">The seafile session.</param>
+        /// <param name="library">The library, where the directory should be created in.</param>
+        /// <param name="path">The directory to create.</param>
         public static async Task CreateDirectory(this SeafSession session, SeafLibrary library, string path)
         {
             var currentPath = path;
@@ -53,6 +68,11 @@ namespace SeafileCli
             }
         }
 
+        /// <summary>
+        /// Retrieves a library by name.
+        /// </summary>
+        /// <param name="session">The seafile session.</param>
+        /// <param name="libraryName">The name of the library to get.</param>
         public static async Task<SeafLibrary> GetLibrary(this SeafSession session, string libraryName)
         {
             var libs = await session.ListLibraries();
