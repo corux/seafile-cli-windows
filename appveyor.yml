@@ -4,7 +4,7 @@ artifacts:
   - path: 'bin\artifacts\*.exe'
 
 build_script:
-  - build.bat
+  - build.bat ILMerge
 
 test: off
 

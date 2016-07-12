@@ -76,9 +76,9 @@ Target "Default" DoNothing
 // Dependencies
 "Clean"
    ==> "Build"
-   ==> "ILMerge"
    ==> "Default"
 
+"Build" ==> "ILMerge"
 "NugetRestore" ==> "Build"
 
 RunTargetOrDefault "Default"
