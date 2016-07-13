@@ -8,9 +8,9 @@ namespace SeafileCli.VerbHandler
     /// </summary>
     public class AccountInfoHandler : IVerbHandler
     {
-        private readonly CommonOptions _options;
+        private readonly AuthorizationOptions _options;
 
-        public AccountInfoHandler(CommonOptions options)
+        public AccountInfoHandler(AuthorizationOptions options)
         {
             _options = options;
         }

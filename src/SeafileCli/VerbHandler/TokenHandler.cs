@@ -8,9 +8,9 @@ namespace SeafileCli.VerbHandler
     /// </summary>
     public class TokenHandler : IVerbHandler
     {
-        private readonly CommonOptions _options;
+        private readonly AuthorizationOptions _options;
 
-        public TokenHandler(CommonOptions options)
+        public TokenHandler(AuthorizationOptions options)
         {
             _options = options;
         }

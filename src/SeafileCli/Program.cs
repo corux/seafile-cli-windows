@@ -25,13 +25,16 @@ namespace SeafileCli
             switch (invokedVerb)
             {
                 case "token":
-                    new TokenHandler((CommonOptions) invokedVerbInstance).Run();
+                    new TokenHandler((AuthorizationOptions) invokedVerbInstance).Run();
                     break;
                 case "upload":
                     new UploadHandler((UploadSubOptions) invokedVerbInstance).Run();
                     break;
                 case "account-info":
-                    new AccountInfoHandler((CommonOptions) invokedVerbInstance).Run();
+                    new AccountInfoHandler((AuthorizationOptions) invokedVerbInstance).Run();
+                    break;
+                case "server-info":
+                    new ServerInfoHandler((CommonOptions) invokedVerbInstance).Run();
                     break;
                 default:
                     Environment.Exit(Parser.DefaultExitCodeFail);
