@@ -1,5 +1,8 @@
 ﻿using System;
+using System.CodeDom;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using SeafileCli.Argparse;
 
@@ -23,7 +26,9 @@ namespace SeafileCli.VerbHandler
             var library = await session.GetLibrary(_options.Library);
             await session.CreateDirectoryWithParents(library, _options.Directory);
 
-            foreach (var file in _options.Files)
+            IEnumerable<string> allfiles = CreateFilepathList(_options.FileNames);
+
+            foreach (var file in allfiles)
             {
                 try
                 {
@@ -44,6 +49,35 @@ namespace SeafileCli.VerbHandler
         public void Run()
         {
             RunAsync().Wait();
+        }
+
+
+        private IEnumerable<string> CreateFilepathList(string[] fileNames)
+        {
+            string[] allfiles = fileNames;
+            IEnumerable<string> calcFiles = new List<string>();
+            string directory = Directory.GetCurrentDirectory();
+
+            foreach (var file in _options.FileNames)
+            {
+                if (file.Contains("*")) // handle wildcard
+                {
+                    if (file.Contains(@"\")) // check if directory path is included
+                    {
+                        directory = Path.GetDirectoryName(file);
+                    }
+                    
+                    var fileName = Path.GetFileName(file); // e.g. *.zip
+                    calcFiles = calcFiles.Concat(Directory.GetFiles(directory, fileName, SearchOption.TopDirectoryOnly));
+                }
+            }
+
+            if (calcFiles.Count() > 0)
+            {
+                allfiles = calcFiles.Distinct().ToArray(); // rm duplicated files
+            }
+
+            return allfiles;
         }
     }
 }
