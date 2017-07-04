@@ -26,7 +26,7 @@ namespace SeafileCli.VerbHandler
             var library = await session.GetLibrary(_options.Library);
             await session.CreateDirectoryWithParents(library, _options.Directory);
 
-            IEnumerable<string> allfiles = CreateFilepathList(_options.FileNames);
+            IEnumerable<string> allfiles = CreateFilepathList(_options.Files);
 
             foreach (var file in allfiles)
             {
@@ -58,7 +58,7 @@ namespace SeafileCli.VerbHandler
             IEnumerable<string> calcFiles = new List<string>();
             string directory = Directory.GetCurrentDirectory();
 
-            foreach (var file in _options.FileNames)
+            foreach (var file in _options.Files)
             {
                 if (file.Contains("*")) // handle wildcard
                 {
