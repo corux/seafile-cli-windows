@@ -54,30 +54,67 @@ namespace SeafileCli.VerbHandler
 
         private IEnumerable<string> CreateFilepathList(string[] fileNames)
         {
-            string[] allfiles = fileNames;
-            IEnumerable<string> calcFiles = new List<string>();
-            string directory = Directory.GetCurrentDirectory();
+            List<string> result = new List<string>();
 
             foreach (var file in _options.Files)
             {
-                if (file.Contains("*")) // handle wildcard
+                string fileName = Path.GetFileName(file);
+                string pathName = Path.GetDirectoryName(file);
+                string searchBase = Directory.GetCurrentDirectory();
+                if (Path.IsPathRooted(file))
                 {
-                    if (file.Contains(@"\")) // check if directory path is included
-                    {
-                        directory = Path.GetDirectoryName(file);
-                    }
-                    
-                    var fileName = Path.GetFileName(file); // e.g. *.zip
-                    calcFiles = calcFiles.Concat(Directory.GetFiles(directory, fileName, SearchOption.TopDirectoryOnly));
+                    searchBase = Path.GetPathRoot(file);
+                    pathName = pathName.Substring(searchBase.Length);
+                }
+
+                IEnumerable<string> directoryList = ResolvePaths(searchBase, pathName);
+                foreach (string dir in directoryList)
+                {
+                    result.AddRange(Directory.GetFiles(dir, fileName, SearchOption.TopDirectoryOnly));
                 }
             }
 
-            if (calcFiles.Count() > 0)
+            return result.Distinct();
+        }
+
+        private IEnumerable<string> ResolvePaths(string root, string pathName)
+        {
+            List<string> result = new List<string>();
+            List<string> parts = pathName.Split(Path.DirectorySeparatorChar).ToList();
+            string currentPart = parts.ElementAt(0);
+
+            string[] matchedDirectories;
+            if (currentPart.Equals("**"))
             {
-                allfiles = calcFiles.Distinct().ToArray(); // rm duplicated files
+                // '**' matches any directory
+                matchedDirectories = Directory.GetDirectories(root, "*", SearchOption.AllDirectories);
+            }
+            else if (currentPart.Contains("*") || currentPart.Contains("?"))
+            {
+                // Use default matching for '*' and '?' wildcards
+                matchedDirectories = Directory.GetDirectories(root, currentPart, SearchOption.TopDirectoryOnly);
+            }
+            else
+            {
+                matchedDirectories = new[] {
+                    Path.Combine(root, currentPart)
+                };
             }
 
-            return allfiles;
+            if (parts.Count > 1)
+            {
+                string remainingPath = string.Join(Path.DirectorySeparatorChar.ToString(), parts.GetRange(1, parts.Count - 1).ToArray());
+                foreach (string dir in matchedDirectories)
+                {
+                    result.AddRange(ResolvePaths(dir, remainingPath));
+                }
+            }
+            else
+            {
+                result.AddRange(matchedDirectories);
+            }
+
+            return result.Distinct();
         }
     }
 }

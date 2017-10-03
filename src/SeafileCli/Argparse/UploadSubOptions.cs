@@ -14,7 +14,7 @@ namespace SeafileCli.Argparse
             DefaultValue = "/")]
         public string Directory { get; set; }
 
-        [OptionArray('f', "files", HelpText = "The files to upload.", Required = true)]
+        [OptionArray('f', "files", HelpText = "The files to upload. Allows usage of the wildcards '**', '*' and '?'.", Required = true)]
         public string[] Files { get; set; }
     }
 }
