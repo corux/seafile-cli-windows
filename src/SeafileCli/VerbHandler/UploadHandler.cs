@@ -13,6 +13,12 @@ namespace SeafileCli.VerbHandler
     /// </summary>
     public class UploadHandler : IVerbHandler
     {
+        private class FileFolder {
+            public string File { get; set; }
+            public string Folder { get; set; }
+            public string Filename => Path.GetFileName(File);
+        }
+
         private readonly UploadSubOptions _options;
 
         public UploadHandler(UploadSubOptions options)
@@ -24,24 +30,53 @@ namespace SeafileCli.VerbHandler
         {
             var session = await _options.GetSession();
             var library = await session.GetLibrary(_options.Library);
-            await session.CreateDirectoryWithParents(library, _options.Directory);
 
-            IEnumerable<string> allfiles = CreateFilepathList(_options.Files);
+            var allFiles = CreateFilepathList(_options.Files).Select(n => new FileFolder {
+                File = n
+            }).ToList();
+            if (_options.PreserveFolders)
+            {
+                string commonBase = CalculateCommonBaseFolder(allFiles.Select(n => n.File));
+                foreach (var file in allFiles)
+                {
+                    string folder = Path.GetDirectoryName(file.File);
+                    if (!string.IsNullOrEmpty(commonBase))
+                    {
+                        folder = folder.Substring(commonBase.Length);
+                    }
+                    file.Folder = $"{_options.Directory}/{folder}";
+                }
+            }
+            else
+            {
+                foreach (var file in allFiles)
+                {
+                    file.Folder = _options.Directory;
+                }
+            }
 
-            foreach (var file in allfiles)
+            // Create folders
+            IEnumerable<string> folders = allFiles.Select(n => n.Folder).Distinct();
+            Console.WriteLine($"Creating {folders.Count()} folder(s)...");
+            foreach (string folder in folders)
+            {
+                await session.CreateDirectoryWithParents(library, folder);
+            }
+
+            // Upload files
+            foreach (var file in allFiles)
             {
                 try
                 {
-                    using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
+                    using (var stream = File.Open(file.File, FileMode.Open, FileAccess.Read))
                     {
-                        await session.UploadSingle(library, _options.Directory, Path.GetFileName(file),
-                            stream, progress => { });
+                        await session.UploadSingle(library, file.Folder, file.Filename, stream, progress => { });
                     }
-                    Console.WriteLine($"Successfully uploaded file: {file} ");
+                    Console.WriteLine($"Successfully uploaded file: {file.File}");
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine($"Failed to upload file: {file}");
+                    Console.WriteLine($"Failed to upload file: {file.File}");
                 }
             }
         }
@@ -51,6 +86,20 @@ namespace SeafileCli.VerbHandler
             RunAsync().Wait();
         }
 
+        private string CalculateCommonBaseFolder(IEnumerable<string> files)
+        {
+            IEnumerable<string> folders = files.Select(n => Path.GetDirectoryName(n)).Distinct();
+            string commonBase = folders.OrderBy(n => n.Length).FirstOrDefault();
+            if (commonBase != null)
+            {
+                while (commonBase.Length > 0 && folders.Any(n => !n.StartsWith(commonBase)))
+                {
+                    commonBase = commonBase.Substring(0, commonBase.Length - 1);
+                }
+            }
+
+            return commonBase;
+        }
 
         private IEnumerable<string> CreateFilepathList(string[] fileNames)
         {
