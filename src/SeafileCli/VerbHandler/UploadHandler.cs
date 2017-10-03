@@ -42,7 +42,7 @@ namespace SeafileCli.VerbHandler
                     string folder = Path.GetDirectoryName(file.File);
                     if (!string.IsNullOrEmpty(commonBase))
                     {
-                        folder = folder.Substring(commonBase.Length);
+                        folder = folder.Substring(commonBase.Length).TrimStart(Path.DirectorySeparatorChar);
                     }
                     file.Folder = $"{_options.Directory}/{folder}";
                 }
@@ -56,11 +56,19 @@ namespace SeafileCli.VerbHandler
             }
 
             // Create folders
-            IEnumerable<string> folders = allFiles.Select(n => n.Folder).Distinct();
-            Console.WriteLine($"Creating {folders.Count()} folder(s)...");
+            IEnumerable<string> folders = allFiles.Select(n => n.Folder).Distinct()
+                .OrderBy(n => n.Count(m => m == Path.DirectorySeparatorChar));
             foreach (string folder in folders)
             {
-                await session.CreateDirectoryWithParents(library, folder);
+                try
+                {
+                    await session.CreateDirectoryWithParents(library, folder);
+                    Console.WriteLine($"Successfully created folder: {folder}");
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"Failed to create folder: {folder}");
+                }
             }
 
             // Upload files
@@ -135,8 +143,11 @@ namespace SeafileCli.VerbHandler
             string[] matchedDirectories;
             if (currentPart.Equals("**"))
             {
-                // '**' matches any directory
+                // '**' matches any directory, including the current directory
                 matchedDirectories = Directory.GetDirectories(root, "*", SearchOption.AllDirectories);
+                matchedDirectories = matchedDirectories.Concat(new[] {
+                    Path.GetFullPath(root) + Path.DirectorySeparatorChar
+                }).ToArray();
             }
             else if (currentPart.Contains("*") || currentPart.Contains("?"))
             {
