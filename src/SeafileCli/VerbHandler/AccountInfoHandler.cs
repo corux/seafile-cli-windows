@@ -21,7 +21,7 @@ namespace SeafileCli.VerbHandler
             var accountInfo = session.CheckAccountInfo().Result;
             var quota = accountInfo.HasUnlimitedSpace ? "unlimited" : accountInfo.Quota + " Bytes";
             Console.WriteLine($"Email: {accountInfo.Email}");
-            Console.WriteLine($"Nickname: {accountInfo.Nickname}");
+            Console.WriteLine($"Name: {accountInfo.Name}");
             Console.WriteLine($"Quota: {quota}");
             Console.WriteLine($"Usage: {accountInfo.Usage} Bytes");
         }

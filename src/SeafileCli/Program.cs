@@ -5,41 +5,16 @@ using SeafileCli.VerbHandler;
 
 namespace SeafileCli
 {
-    internal static class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
-            string invokedVerb = null;
-            object invokedVerbInstance = null;
-            var options = new Options();
-
-            if (!Parser.Default.ParseArguments(args, options, (verb, subOptions) =>
-            {
-                invokedVerb = verb;
-                invokedVerbInstance = subOptions;
-            }))
-            {
-                Environment.Exit(Parser.DefaultExitCodeFail);
-            }
-
-            switch (invokedVerb)
-            {
-                case "token":
-                    new TokenHandler((AuthorizationOptions) invokedVerbInstance).Run();
-                    break;
-                case "upload":
-                    new UploadHandler((UploadSubOptions) invokedVerbInstance).Run();
-                    break;
-                case "account-info":
-                    new AccountInfoHandler((AuthorizationOptions) invokedVerbInstance).Run();
-                    break;
-                case "server-info":
-                    new ServerInfoHandler((CommonOptions) invokedVerbInstance).Run();
-                    break;
-                default:
-                    Environment.Exit(Parser.DefaultExitCodeFail);
-                    break;
-            }
+            Parser.Default.ParseArguments<AccountInfoOptions, CommonOptions, TokenOptions, UploadSubOptions>(args)
+                .WithParsed<AccountInfoOptions>(n => new AccountInfoHandler(n).Run())
+                .WithParsed<TokenOptions>(n => new TokenHandler(n).Run())
+                .WithParsed<UploadSubOptions>(n => new UploadHandler(n).Run())
+                .WithParsed<CommonOptions>(n => new ServerInfoHandler(n).Run())
+                .WithNotParsed(errors => Environment.Exit(1));
         }
     }
 }

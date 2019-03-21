@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -96,7 +95,7 @@ namespace SeafileCli.VerbHandler
 
         private string CalculateCommonBaseFolder(IEnumerable<string> files)
         {
-            IEnumerable<string> folders = files.Select(n => Path.GetDirectoryName(n)).Distinct();
+            List<string> folders = files.Select(Path.GetDirectoryName).Distinct().ToList();
             string commonBase = folders.OrderBy(n => n.Length).FirstOrDefault();
             if (commonBase != null)
             {
@@ -109,11 +108,11 @@ namespace SeafileCli.VerbHandler
             return commonBase;
         }
 
-        private IEnumerable<string> CreateFilepathList(string[] fileNames)
+        private IEnumerable<string> CreateFilepathList(IEnumerable<string> fileNames)
         {
             List<string> result = new List<string>();
 
-            foreach (var file in _options.Files)
+            foreach (var file in fileNames)
             {
                 string fileName = Path.GetFileName(file);
                 string pathName = Path.GetDirectoryName(file);

@@ -1,7 +1,9 @@
-﻿using CommandLine;
+﻿using System.Collections.Generic;
+using CommandLine;
 
 namespace SeafileCli.Argparse
 {
+    [Verb("upload", HelpText = "Uploads files and folders to Seafile.")]
     public class UploadSubOptions : AuthorizationOptions
     {
         [Option('l', "library",
@@ -10,14 +12,14 @@ namespace SeafileCli.Argparse
         public string Library { get; set; }
 
         [Option('d', "directory",
-            HelpText = "The remote directory, where the files should be uploaded to. Path seperator is the forward slash (/).",
-            DefaultValue = "/")]
+            HelpText = "The remote directory, where the files should be uploaded to. Path separator is the forward slash (/).",
+            Default = "/")]
         public string Directory { get; set; }
 
-        [OptionArray('f', "files",
+        [Option('f', "files",
             HelpText = "The files to upload. Allows usage of the wildcards '**', '*' and '?'.",
             Required = true)]
-        public string[] Files { get; set; }
+        public IEnumerable<string> Files { get; set; }
 
         [Option('k', "keep-folders",
             HelpText = "Preserves the folder structure defined by the specified files. If this option is not used, all files will be collapsed and uploaded into the specified folder.")]
