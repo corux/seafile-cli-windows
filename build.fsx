@@ -17,7 +17,7 @@ let nugetPackages = "src/packages"
 let sln = "src/SeafileCli.sln"
 let solutionInfo = "src/SolutionInfo.cs"
 let nugetExe = "packages/NuGet.CommandLine/tools/NuGet.exe"
-let ilMergeExe = "packages/ilmerge/tools/ILMerge.exe"
+let ilMergeExe = "packages/ILMerge/tools/net452/ILMerge.exe"
 let name = "Seafile CLI"
 let publisher = "Tobias Wallura"
 
